@@ -6,12 +6,21 @@ import random
 class Asteroid(CircleShape):
     def __init__(self, x, y, radius):
         super().__init__(x, y, radius)
+        self.points = []
+        for i in range(8):
+            angle = i * (360 / 8)
+            dist = self.radius + random.uniform(-self.radius / 4, self.radius / 4)
+            point = pygame.Vector2(0, 1).rotate(angle) * dist
+            self.points.append(point)
         
     def draw(self, screen):
-        pygame.draw.circle(screen, "white", self.position, self.radius, LINE_WIDTH)
+        # Transform points to world coordinates
+        world_points = [self.position + p for p in self.points]
+        pygame.draw.polygon(screen, "white", world_points, LINE_WIDTH)
 
     def update(self, dt):
         self.position += (self.velocity * dt) 
+        self.wrap_screen()
     
     def split(self):
         self.kill()
